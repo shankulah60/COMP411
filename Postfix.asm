@@ -163,4 +163,79 @@ read_in:
 				addi $t2, $t2, 1				#Increment the loop counter
 				j val_process_loop				#Loop through again
 		calc_val:
-			
+			mult $t1, $t3						#value = value * mult (variable)
+			mflo $t1							#Set the value as the result of the multiplication
+			add $t7, $t0, $s7					#Set $t7 as the stack's address
+			sb $t1, 0($t7)						#Store the value in the stack
+			addi $t0, $t0, 1					#Increment the stack_size variable
+			j processing_while
+	#afterWhile (printing occurs)
+	exit_line:
+		addi $t9, $t0, -2						#Subtract 2 from the stack_size variable
+		add $t8, $t9, $s7						#Get the address of the byte to be printed
+		lb $a0, 0($t8)							#Load byte val as the argument to syscall
+		addi $v0, $0, 1							#syscall code for printing an integer
+		syscall									#Execute
+		
+add_stack:
+	#Not calling other functions, no stack needed
+	la $t0, stack								#Load the address of stack into $t0
+	addi $t2, $a0, -2							#Set $t2 to stack_size - 2
+	addi $t3, $a0, -1							#Set $t3 to stack_size - 1
+	add $t2, $t2, $t0 							#Add the value of the stack to stack_size - 2
+	add $t3, $t3, $t0							#Add the value of the stack to stack_size - 1
+	lb $t4, 0($t2)								#Load the first number
+	lb $t5, 0($t3)								#Load the second number
+	add $t1, $t4, $t5							#Add the numbers together
+	sb $t1, 0($t2)								#Store the result in stack (array)
+	addi $a0, $a0, -1 							#Reduce the stack_size by 1
+	move $v0, $a0								#Return the updated stack size
+	jr $ra										#Go back to function call
+
+mult_stack:
+	#Not calling other functions, no stack needed
+	la $t0, stack								#Load the address of stack into $t0
+	addi $t2, $a0, -2							#Set $t2 to stack_size - 2
+	addi $t3, $a0, -1							#Set $t3 to stack_size - 1
+	add $t2, $t2, $t0 							#Add the value of the stack to stack_size - 2
+	add $t3, $t3, $t0							#Add the value of the stack to stack_size - 1
+	lb $t4, 0($t2)								#Load the first number
+	lb $t5, 0($t3)								#Load the second number
+	mult $t4, $t5								#Multiply the two numbers
+	mflo $t1									#Store the result (temp.) in $t1
+	sb $t1, 0($t2)								#Store the result in stack (array)
+	addi $a0, $a0, -1 							#Reduce the stack_size by 1
+	move $v0, $a0								#Return the updated stack size
+	jr $ra										#Go back to function call
+	
+div_stack:
+	#Not calling other functions, no stack needed
+	la $t0, stack								#Load the address of stack into $t0
+	addi $t2, $a0, -2							#Set $t2 to stack_size - 2
+	addi $t3, $a0, -1							#Set $t3 to stack_size - 1
+	add $t2, $t2, $t0 							#Add the value of the stack to stack_size - 2
+	add $t3, $t3, $t0							#Add the value of the stack to stack_size - 1
+	lb $t4, 0($t2)								#Load the first number
+	lb $t5, 0($t3)								#Load the second number
+	#add $t1, $t4, $t5							#Add the numbers together
+	div $t4, $t5								#Divide $t4 by $t5
+	mflo $t1									#Store the result in #t1
+	sb $t1, 0($t2)								#Store the result  ($t1) in stack (array)
+	addi $a0, $a0, -1 							#Reduce the stack_size by 1
+	move $v0, $a0								#Return the updated stack size
+	jr $ra										#Go back to function call
+	
+sub_stack:
+	#Not calling other functions, no stack needed
+	la $t0, stack								#Load the address of stack into $t0
+	addi $t2, $a0, -2							#Set $t2 to stack_size - 2
+	addi $t3, $a0, -1							#Set $t3 to stack_size - 1
+	add $t2, $t2, $t0 							#Add the value of the stack to stack_size - 2
+	add $t3, $t3, $t0							#Add the value of the stack to stack_size - 1
+	lb $t4, 0($t2)								#Load the first number
+	lb $t5, 0($t3)								#Load the second number
+	sub $t1, $t4, $t5							#Add the numbers together
+	sb $t1, 0($t2)								#Store the result in stack (array)
+	addi $a0, $a0, -1 							#Reduce the stack_size by 1
+	move $v0, $a0								#Return the updated stack size
+	jr $ra										#Go back to function call	
