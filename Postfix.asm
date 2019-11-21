@@ -6,7 +6,7 @@
 .text
 
 #Set some values in the saved registers
-li $s0, newLine
+la $s0, newLine
 #Reserving $s1 for processing string (later)
 li $s2, ' '							#Store the value of a space
 li $s3, '+'							#Store the value of a +
@@ -65,7 +65,7 @@ read_in:
 		
 		if_mult:
 			bne $t5, $s5, if_div	#if char != * , then go to next if
-			addi $s-, $sp , -16		#Make room on stack for temps that need to be saved
+			addi $sp, $sp , -16		#Make room on stack for temps that need to be saved
 			sw $t1, 12($sp)			#Store the value variable
 			sw $t2, 8($sp)			#Store the loop counter
 			sw $t3, 4($sp)			#Store the mult variable 
@@ -86,7 +86,7 @@ read_in:
 		
 		if_div:
 			bne $t5, $s6, if_sub 	#if char != /, then go to next if
-			addi $s-, $sp , -16		#Make room on stack for temps that need to be saved
+			addi $sp, $sp , -16		#Make room on stack for temps that need to be saved
 			sw $t1, 12($sp)			#Store the value variable
 			sw $t2, 8($sp)			#Store the loop counter
 			sw $t3, 4($sp)			#Store the mult variable
@@ -175,7 +175,10 @@ read_in:
 		add $t8, $t9, $s7						#Get the address of the byte to be printed
 		lb $a0, 0($t8)							#Load byte val as the argument to syscall
 		addi $v0, $0, 1							#syscall code for printing an integer
-		syscall									#Execute
+		syscall								#Execute
+		
+		li $v0, 10
+		syscall
 		
 add_stack:
 	#Not calling other functions, no stack needed
