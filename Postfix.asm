@@ -20,6 +20,8 @@ read_in:
 	li $a1, 32						#Max characters per line
 	syscall							#Execute the command
 	
+	#check is string is == "0", then go to exit label
+	
 	#Variables for processing the line
 	li $t0, 0						#int stack_size = 0;
 	li $t1, 0						#int value = 0;
@@ -36,7 +38,7 @@ read_in:
 		lb $t5, 0($t7)				#Load the byte from the buffer
 		beq $t5, $s0, exit_line		#if char == new line, done with line
 		#*****REPLACE ONCE LOOP IS IMPLEMENTED!!!!!******
-		beq $t5, $0, exit_line		#if char == '0' then done with line (program)
+		beq $t5, $0, exit_line			#if char == '0' then done with line (program)
 		addi $t2, $t2, 1			#Increment the loop counter
 		
 		if_space:
@@ -173,10 +175,16 @@ read_in:
 	exit_line:
 		addi $t9, $t0, -2						#Subtract 2 from the stack_size variable
 		add $t8, $t9, $s7						#Get the address of the byte to be printed
+		
 		lb $a0, 0($t8)							#Load byte val as the argument to syscall
 		addi $v0, $0, 1							#syscall code for printing an integer
 		syscall								#Execute
 		
+		la $a0, newLine							#Print a newline before getting a newline of input
+		li $v0, 4
+		syscall	
+		j read_in								#Do it again
+exit:	
 		li $v0, 10
 		syscall
 		
