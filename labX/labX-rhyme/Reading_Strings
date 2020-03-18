@@ -1,0 +1,41 @@
+.data:
+	array: .space 1000
+	newline: .asciiz "\n"
+.text:
+	#TESTING
+	li $t0, 0
+	li $t1, 2
+	
+	la $s0, array
+
+loop_read:
+	beq $t0, $t1, loop_end
+		add $a0, $0, $s0
+		li $a1, 15
+		li $v0, 8
+		syscall 		#Reads the string
+		
+		addi $s0, $s0, 15
+		addi $t0, $t0, 1
+		j loop_read
+loop_end:	
+	
+	li $t0, 0
+	la $s0, array
+	
+loop_print:
+		beq $t0, $t1, print_loop_end
+			li $v0, 4
+			move $a0, $s0
+			syscall
+			
+			
+			addi $s0, $s0, 15
+			addi $t0, $t0, 1
+			j loop_print
+	
+print_loop_end:	
+	li $v0, 10
+	syscall
+
+
